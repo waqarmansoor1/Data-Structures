@@ -7,11 +7,10 @@
 #include <fstream>
 #include <vector>
 #include <cmath>
-#include <stack>
 #include <iomanip>
 #include <limits>
 
-using namespace std;
+using namespace   std;
 
 class Pair {
 private:
@@ -271,6 +270,39 @@ public:
 
 unordered_set<unsigned int> Machine::usedIDs;
 
+
+class Stack{
+    private :
+       Machine** arr;
+       int top ;
+       int size ;
+    public :
+        Stack(int size){
+            this->size = size ;
+            this->top = -1 ;
+            this->arr = new Machine*[size] ;
+            for(int i = 0 ; i<this->size ;i++) arr[i] = NULL; 
+        }
+
+        void push(Machine* m){
+            if(this->top  == this->size -1){
+                cout << "STACK IS FULL" << endl ;
+            }
+            else{
+                this->arr[++this->top] = m ;
+            }
+            
+        }
+        void pop(){
+            if(this->top == -1) cout << "Stack is empty"<<endl;
+            else this->arr[this->top--] = NULL; 
+        }
+        bool isEmpty(){return this->top == -1 ;}
+
+        Machine* atTop(){return this->arr[this->top] ;}
+        
+};
+
 class Ring_DHT {
 private:
     Machine* head;
@@ -512,7 +544,7 @@ public:
         unsigned int key = p->getKey();
         cout << "[System] Inserting file '" << FileName << "' with Hash Key: " << key << endl;
 
-        stack<Machine*> path;
+        Stack path(1000);
         Machine* responsibleMachine = searchMachine(key, path);
 
         if(responsibleMachine) {
@@ -556,7 +588,7 @@ public:
         } while(curr != head);
     }
     
-    Machine* searchMachine(unsigned int key, stack<Machine*>& path) {
+    Machine* searchMachine(unsigned int key, Stack &path) {
         if(!head) return nullptr;
         
         Machine* curr = head;
@@ -760,7 +792,7 @@ int main(){
                     cin >> key;
                 }
                 
-                stack<Machine*> pathStack;
+                Stack pathStack(1000);
                 Machine* res = DHT.searchMachine(key, pathStack);
                 
                 if(res) {
@@ -768,8 +800,8 @@ int main(){
                     
                     cout << "Path/Succession taken (Hops):" << endl;
                     vector<unsigned int> pathVec;
-                    while(!pathStack.empty()){
-                        pathVec.push_back(pathStack.top()->getID());
+                    while(!pathStack.isEmpty()){
+                        pathVec.push_back(pathStack.atTop()->getID());
                         pathStack.pop();
                     }
                     
